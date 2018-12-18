@@ -16,4 +16,5 @@ done
 
 ln -fs /opt/vyatta/sbin/yggdrasilconf /usr/local/bin/yggdrasilconf
 ln -fs /opt/vyatta/sbin/yggdrasilctl /usr/local/bin/yggdrasilctl
+ln -s /config/yggdrasil.tun0.conf /etc/yggdrasil.conf
 /opt/vyatta/sbin/vyatta-restart-yggdrasil

@@ -37,7 +37,7 @@ all: cross
 cross: clean build-cross package cleanpackage
 native: clean build-native package cleanpackage
 
-build-cross: yggdrasilclone yggdrasilbuild-cross yggdrasilconfbuild-cross yggdrasilstage
+build-cross: yggdrasilclone yggdrasilbuild-cross yggdrasilstage
 build-native: yggdrasilclone yggdrasilbuild-native yggdrasilconfbuild-native yggdrasilstage
 
 package:
@@ -69,18 +69,14 @@ yggdrasilclone:
 	@[ "$(BUILDDIR_YGG)" = "/tmp/yggdrasil" ] && git clone -b $(BRANCH) https://github.com/yggdrasil-network/yggdrasil-go $(BUILDDIR_YGG) || true
 	touch $(BUILDDIR_YGG)/yggdrasil
 	touch $(BUILDDIR_YGG)/yggdrasilctl
-	touch $(BUILDDIR_YGG)/yggdrasilconf
+	touch $(BUILDDIR_YGG)/config
 
 yggdrasilbuild-cross:
-	@[ "$(PKGARCH)" = "mipsel" ] && (cd $(BUILDDIR_YGG) && GOOS='linux' GOARCH='mipsle' ./build) || true
-	@[ "$(PKGARCH)" = "mips" ] && (cd $(BUILDDIR_YGG) && GOOS='linux' GOARCH='mips64' ./build) || true
+	@[ "$(PKGARCH)" = "mipsel" ] && (cd $(BUILDDIR_YGG) && ln -s ../contrib/config cmd && GOOS='linux' GOARCH='mipsle' ./build) || true
+	@[ "$(PKGARCH)" = "mips" ] && (cd $(BUILDDIR_YGG) && ln -s ../contrib/config cmd && GOOS='linux' GOARCH='mips64' ./build) || true
 
 yggdrasilbuild-native:
 	cd $(BUILDDIR_YGG) && GOOS='linux' ./build
-
-yggdrasilconfbuild-cross:
-	@[ "$(PKGARCH)" = "mipsel" ] && (cd $(BUILDDIR_YGG) && GOOS='linux' GOARCH='mipsle' GOPATH=$(BUILDDIR_YGG) go build contrib/config/yggdrasilconf.go) || true
-	@[ "$(PKGARCH)" = "mips" ] && (cd $(BUILDDIR_YGG) && GOOS='linux' GOARCH='mips64' GOPATH=$(BUILDDIR_YGG) go build contrib/config/yggdrasilconf.go) || true
 
 yggdrasilconfbuild-native:
 	cd $(BUILDDIR_YGG) && GOOS='linux' GOARCH='mipsle' GOPATH=$(BUILDDIR_YGG) go build contrib/config/yggdrasilconf.go || true
@@ -89,7 +85,7 @@ yggdrasilconfbuild-native:
 yggdrasilstage:
 	cp $(BUILDDIR_YGG)/yggdrasil opt/vyatta/sbin/yggdrasil
 	cp $(BUILDDIR_YGG)/yggdrasilctl opt/vyatta/sbin/yggdrasilctl
-	cp $(BUILDDIR_YGG)/yggdrasilconf opt/vyatta/sbin/yggdrasilconf
+	cp $(BUILDDIR_YGG)/config opt/vyatta/sbin/yggdrasilconf
 
 clean:
 	rm -rf sbin/yggdrasil
